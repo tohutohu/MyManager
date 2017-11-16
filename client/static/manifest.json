@@ -1,0 +1,14 @@
+{
+  "short_name": "po",
+  "name": "poi",
+  "icons": [
+    {
+      "src": "/static/icon.jpg",
+      "sizes": "400x400",
+      "type": "image/jpg"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "gcm_sender_id": "1022938635906"
+}
