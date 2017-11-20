@@ -21,7 +21,7 @@ const api = require('../routes/api');
 const app = express();
 const t = require('./Trello');
 const moment = require('moment');
-let Trello;
+let Trello, Diary;
 
 const init = async () => {
   const port = process.env.PORT || 3334;
@@ -74,7 +74,7 @@ const init = async () => {
     })
   })
 
-  app.get('/api/push/test', (req, res) => {
+  const notification = (message) => {
     push.find({}).toArray((err, docs) => {
       docs.forEach(doc => {
         const pushOption = {
@@ -85,16 +85,18 @@ const init = async () => {
           }
         }
 
-        const message = JSON.stringify({
-          title: 'test',
-          body: 'poyo',
-          link: 'https://manager.to-hutohu.com'
-        })
-
-        webpush.sendNotification(pushOption, message)
+        webpush.sendNotification(pushOption, JSON.stringify(message))
       })
-      res.json({ok:'ok'})
     })
+  }
+
+  app.get('/api/push/test', (req, res) => {
+    notification({
+      title: 'test',
+      body: 'poyo',
+      link: 'https://manager.to-hutohu.com'
+    })
+    res.json({ok:'ok'})
   })
   app.use(express.static(path.resolve(__dirname + '/../client/dist')))
   app.get('/*', (a, b) => b.sendFile(path.resolve(__dirname + '/../client/dist/index.html')));
@@ -117,6 +119,29 @@ const init = async () => {
     res.render('error');
   });
   Trello = await MongoManager.getCollection('Trello');
+  Diary = await MongoManager.getCollection('Diary');
+
+  const diaryReminder = new CronJob({
+    cronTime: '0 7 * * *',
+    onTick: function () {
+      const date = moment().subtract(1, 'days').format('YYYY-MM-DD')
+      Diary.findOne({date: date}, (err, doc) => {
+        if(err) {
+          console.log(err)
+          return
+        }
+        if (!doc) {
+          notification({
+            title: '日記が書かれていません！',
+            body: date + 'の日記を書きましょう！',
+            link: 'https://manager.to-hutohu.com'
+          })
+        }
+      })
+    },
+    start: false
+  })
+  diaryReminder.start()
 
   const dayTasks = new CronJob({
     cronTime: '55 23 * * *',
