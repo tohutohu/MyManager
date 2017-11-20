@@ -12,6 +12,7 @@ class Connect{
   }
 
   async init(){
+    /* eslint-disable no-console */
     console.log('接続する');
     this.db = await mongo.connect(MONGO_URL);
     console.log('接続しました');

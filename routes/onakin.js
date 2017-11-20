@@ -6,7 +6,6 @@ let onakin
 
 
 router.post('/onakin/update', (req, res) => {
-  console.log(req.body)
   onakin.insertOne(req.body, (err) => {
     if(err){
       res.status = 500
@@ -20,7 +19,6 @@ router.post('/onakin/update', (req, res) => {
 
 router.get('/onakin/time', (req, res) => {
   onakin.find().sort({_id: -1}).limit(1).toArray( (err, doc) => {
-    console.log(err, doc) 
     res.json(doc[0])
   })
 })

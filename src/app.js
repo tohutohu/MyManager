@@ -6,19 +6,12 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const account = require('./Account');
 
-
-const CronJob = require('cron').CronJob;
-
 const MongoManager = require('./MongoManager');
 const Session = require('express-session');
 const MongoStore = require('connect-mongo')(Session);
 
-const notification = require('./notification')
 const api = require('../routes/api');
 const app = express();
-const t = require('./Trello');
-const moment = require('moment');
-let Trello, Diary;
 
 const init = async () => {
   const port = process.env.PORT || 3334;
@@ -52,7 +45,6 @@ const init = async () => {
     }
   }
 
-
   app.use(logger('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
@@ -71,14 +63,6 @@ const init = async () => {
     })
   })
 
-  app.get('/api/push/test', (req, res) => {
-    notification({
-      title: 'test',
-      body: 'poyo',
-      link: 'https://manager.to-hutohu.com'
-    })
-    res.json({ok:'ok'})
-  })
   app.use(express.static(path.resolve(__dirname + '/../client/dist')))
   app.get('/*', (a, b) => b.sendFile(path.resolve(__dirname + '/../client/dist/index.html')));
 
@@ -99,49 +83,6 @@ const init = async () => {
     res.status(err.status || 500);
     res.render('error');
   });
-  Trello = await MongoManager.getCollection('Trello');
-  Diary = await MongoManager.getCollection('Diary');
-
-  const diaryReminder = new CronJob({
-    cronTime: '0 7 * * *',
-    onTick: function () {
-      const date = moment().subtract(1, 'days').format('YYYY-MM-DD')
-      Diary.findOne({date: date}, (err, doc) => {
-        if(err) {
-          console.log(err)
-          return
-        }
-        if (!doc) {
-          notification({
-            title: '日記が書かれていません！',
-            body: date + 'の日記を書きましょう！',
-            link: 'https://manager.to-hutohu.com'
-          })
-        }
-      })
-    },
-    start: false
-  })
-  diaryReminder.start()
-
-  const dayTasks = new CronJob({
-    cronTime: '55 23 * * *',
-    onTick: function () {
-      t.get('/1/list/57dd650424d5552396a9a18c/cards', (err, data) => {
-        const po = {};
-        po.date = moment().format('YYYY-MM-DD');
-        po.number = data.length;
-        po.tasks = data;
-
-        Trello.insertOne(po, () => {
-
-          t.post('/1/lists/57dd650424d5552396a9a18c/archiveAllCards', () => {});
-        });
-      });
-    },
-    start: false
-  });
-  dayTasks.start();
 
 };
 init();

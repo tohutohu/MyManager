@@ -5,8 +5,6 @@ const shortid = require('shortid')
 const MongoManager = require('../src/MongoManager')
 let hitomemo
 
-
-/* GET home page. */
 router.post('/hitomemo/create', function(req, res) {
   const ins = req.body
   const po = {}
