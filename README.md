@@ -1,2 +1,2 @@
-# Hatasa-Server
-
+# MyManager
+Personal life manager
