@@ -1,5 +1,4 @@
 const express = require('express');
-const moment = require('moment')
 const router = express.Router();
 
 const MongoManager = require('../src/MongoManager')
@@ -8,7 +7,7 @@ let onakin
 
 router.post('/onakin/update', (req, res) => {
   console.log(req.body)
-  onakin.insertOne(req.body, (err, body) => {
+  onakin.insertOne(req.body, (err) => {
     if(err){
       res.status = 500
       res.json(err)
