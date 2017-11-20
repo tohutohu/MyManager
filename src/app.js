@@ -6,10 +6,6 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const account = require('./Account');
 
-const webpush = require('web-push')
-
-const GCM_API_KEY = process.env.GCM_API_KEY
-webpush.setGCMAPIKey(GCM_API_KEY)
 
 const CronJob = require('cron').CronJob;
 
@@ -17,6 +13,7 @@ const MongoManager = require('./MongoManager');
 const Session = require('express-session');
 const MongoStore = require('connect-mongo')(Session);
 
+const notification = require('./notification')
 const api = require('../routes/api');
 const app = express();
 const t = require('./Trello');
@@ -73,22 +70,6 @@ const init = async () => {
       res.json({ok: true})
     })
   })
-
-  const notification = (message) => {
-    push.find({}).toArray((err, docs) => {
-      docs.forEach(doc => {
-        const pushOption = {
-          endpoint: doc.endpoint,
-          keys: {
-            p256dh: doc.publicKey,
-            auth: doc.authSecret
-          }
-        }
-
-        webpush.sendNotification(pushOption, JSON.stringify(message))
-      })
-    })
-  }
 
   app.get('/api/push/test', (req, res) => {
     notification({
