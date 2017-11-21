@@ -84,5 +84,10 @@ const init = async () => {
     res.render('error');
   });
 
+
+  // start day tasks
+  require('../tasks/BirthDayNotify.js').start()
+  require('../tasks/Diary.js').start()
+  require('../tasks/TrelloArchive.js').start()
 };
 init();
