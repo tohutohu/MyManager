@@ -1,4 +1,4 @@
-const MongoManager = require('./MongoManager');
+const MongoManager = require('./MongoManager.js');
 const webpush = require('web-push')
 require('dotenv').config({path: __dirname + '/../.env'})
 
@@ -22,5 +22,7 @@ const notification = async (message) => {
     })
   })
 }
+
+// notification({title:'test', body: 'poi'})
 
 module.exports = notification

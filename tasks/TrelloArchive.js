@@ -1,4 +1,4 @@
-const MongoManager = require('./MongoManager');
+const MongoManager = require('../src/MongoManager');
 const CronJob = require('cron').CronJob;
 const t = require('../src/Trello');
 const moment = require('moment')

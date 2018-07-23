@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const account = require('./Account');
 
-const MongoManager = require('./MongoManager');
+const MongoManager = require('./MongoManager.js');
 const Session = require('express-session');
 const MongoStore = require('connect-mongo')(Session);
 
